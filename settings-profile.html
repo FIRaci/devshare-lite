@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cài đặt hồ sơ - DevShare</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navbar chung -->
+  <header id="app-navbar"></header>
+
+  <!-- Bố cục chính -->
+  <div class="container">
+    <div class="layout-wrapper">
+      <!-- Cột Sidebar trái -->
+      <aside id="app-sidebar"></aside>
+
+      <!-- Cột nội dung chính -->
+      <main class="main-content">
+        <div class="form-card">
+          <h1 class="form-title">Cài đặt hồ sơ cá nhân</h1>
+
+          <form id="profile-settings-form">
+            <!-- Xem trước avatar -->
+            <div class="form-group" style="display: flex; align-items: center; gap: 16px;">
+              <img id="avatar-preview" src="" alt="Avatar" class="avatar-img-lg" />
+              <div>
+                <label class="form-label" for="setting-avatar">Ảnh đại diện (URL hình ảnh)</label>
+                <input 
+                  type="url" 
+                  id="setting-avatar" 
+                  class="form-control" 
+                  style="width: 320px;"
+                  placeholder="https://images.unsplash.com/..." 
+                />
+              </div>
+            </div>
+
+            <!-- Họ và tên -->
+            <div class="form-group">
+              <label class="form-label" for="setting-name">Tên hiển thị <span class="required">*</span></label>
+              <input 
+                type="text" 
+                id="setting-name" 
+                class="form-control" 
+                required 
+              />
+            </div>
+
+            <!-- Tên người dùng (không đổi) -->
+            <div class="form-group">
+              <label class="form-label">Tên tài khoản (Username)</label>
+              <input 
+                type="text" 
+                id="setting-username" 
+                class="form-control" 
+                disabled 
+                style="background-color: var(--bg-app); cursor: not-allowed;" 
+              />
+              <div class="form-help">Username được dùng cho định danh u/username trên hệ thống.</div>
+            </div>
+
+            <!-- Tiểu sử Bio -->
+            <div class="form-group">
+              <label class="form-label" for="setting-bio">Giới thiệu bản thân (Bio)</label>
+              <textarea 
+                id="setting-bio" 
+                class="form-control" 
+                rows="4" 
+                placeholder="Chia sẻ đôi điều về kỹ năng, sở thích lập trình của bạn..."
+              ></textarea>
+            </div>
+
+            <!-- Nút bấm -->
+            <div class="form-actions">
+              <a href="profile.html" class="btn btn-outline">Xem hồ sơ</a>
+              <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const user = window.devStore.getCurrentUser();
+
+      const nameInput = document.getElementById('setting-name');
+      const usernameInput = document.getElementById('setting-username');
+      const bioInput = document.getElementById('setting-bio');
+      const avatarInput = document.getElementById('setting-avatar');
+      const avatarPreview = document.getElementById('avatar-preview');
+      const form = document.getElementById('profile-settings-form');
+
+      nameInput.value = user.name || user.username;
+      usernameInput.value = `u/${user.username}`;
+      bioInput.value = user.profile.bio || '';
+      avatarInput.value = user.profile.avatar || '';
+      avatarPreview.src = user.profile.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
+
+      avatarInput.addEventListener('input', () => {
+        avatarPreview.src = avatarInput.value.trim() || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
+      });
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        window.devStore.updateUserProfile({
+          name: nameInput.value.trim(),
+          bio: bioInput.value.trim(),
+          avatar: avatarInput.value.trim()
+        });
+
+        showToast('Đã lưu thông tin hồ sơ thành công!', 'success');
+        setTimeout(() => {
+          window.location.href = 'profile.html';
+        }, 500);
+      });
+    });
+  </script>
+</body>
+</html>

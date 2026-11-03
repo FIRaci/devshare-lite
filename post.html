@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi tiết bài viết - DevShare</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navbar chung -->
+  <header id="app-navbar"></header>
+
+  <!-- Bố cục chính -->
+  <div class="container">
+    <div class="layout-wrapper">
+      <!-- Cột Sidebar trái -->
+      <aside id="app-sidebar"></aside>
+
+      <!-- Cột nội dung chính -->
+      <main class="main-content">
+        <div style="margin-bottom: 16px;">
+          <a href="index.html" class="btn btn-ghost btn-sm">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Quay lại bảng tin
+          </a>
+        </div>
+
+        <!-- Chi tiết bài viết -->
+        <div id="post-detail-container"></div>
+
+        <!-- Khung bình luận -->
+        <section id="comments-section"></section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/feed.js"></script>
+  <script src="js/post-detail.js"></script>
+</body>
+</html>

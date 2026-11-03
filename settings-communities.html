@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý cộng đồng - DevShare</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Styling cho switch toggle */
+    .switch-toggle {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    .switch-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #cbd5e0;
+      transition: .2s;
+      border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .2s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: var(--primary);
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+    .setting-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar chung -->
+  <header id="app-navbar"></header>
+
+  <!-- Bố cục chính -->
+  <div class="container">
+    <div class="layout-wrapper">
+      <!-- Cột Sidebar trái -->
+      <aside id="app-sidebar"></aside>
+
+      <!-- Cột nội dung chính -->
+      <main class="main-content">
+        <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <h1 style="font-size: 1.5rem; font-weight: 800;">Quản lý cộng đồng đã tham gia</h1>
+              <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Tùy chỉnh thông báo và quản lý các cộng đồng bạn đang theo dõi</p>
+            </div>
+            <a href="create-community.html" class="btn btn-teal btn-sm">+ Tạo cộng đồng mới</a>
+          </div>
+
+          <div id="joined-communities-list"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('joined-communities-list');
+
+      function renderList() {
+        const joined = window.devStore.getCommunities().filter(c => c.is_member);
+
+        if (joined.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <h3 class="empty-state-title">Bạn chưa tham gia cộng đồng nào</h3>
+              <p class="empty-state-desc">Hãy khám phá các cộng đồng từ thanh điều hướng bên trái và nhấn Tham gia nhé!</p>
+              <a href="index.html" class="btn btn-primary">Khám phá cộng đồng</a>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = joined.map(c => `
+          <div class="setting-item-row" id="comm-row-${c.name}">
+            <div>
+              <a href="community.html?name=${c.name}" style="font-size: 1.1rem; font-weight: 700; color: var(--primary);">c/${c.name}</a>
+              <div style="color: var(--text-sub); font-size: 0.85rem; margin-top: 2px;">${c.description}</div>
+              <div style="color: var(--text-muted); font-size: 0.775rem; margin-top: 4px;">${c.member_count} thành viên</div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 0.85rem; color: var(--text-sub);">Bật thông báo:</span>
+                <label class="switch-toggle">
+                  <input type="checkbox" checked onchange="showToast('Đã lưu tùy chọn thông báo cho c/${c.name}', 'info')">
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <button class="btn btn-outline btn-sm leave-btn" data-name="${c.name}" style="color: var(--danger); border-color: var(--danger);">
+                Rời cộng đồng
+              </button>
+            </div>
+          </div>
+        `).join('');
+
+        // Attach leave events
+        container.querySelectorAll('.leave-btn').forEach(btn => {
+          btn.onclick = () => {
+            const name = btn.dataset.name;
+            showConfirmModal({
+              title: `Rời cộng đồng c/${name}?`,
+              message: `Các bài viết từ c/${name} sẽ không còn xuất hiện trong Bảng tin cá nhân của bạn.`,
+              confirmText: 'Rời cộng đồng',
+              onConfirm: () => {
+                window.devStore.toggleJoinCommunity(name);
+                showToast(`Đã rời khỏi c/${name}`, 'info');
+                renderList();
+                renderSidebar();
+              }
+            });
+          };
+        });
+      }
+
+      renderList();
+    });
+  </script>
+</body>
+</html>

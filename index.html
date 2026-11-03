@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevShare - Cộng đồng chia sẻ kiến thức lập trình</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navbar chung -->
+  <header id="app-navbar"></header>
+
+  <!-- Bố cục chính -->
+  <div class="container">
+    <div class="layout-wrapper">
+      <!-- Cột Sidebar trái -->
+      <aside id="app-sidebar"></aside>
+
+      <!-- Cột nội dung chính -->
+      <main class="main-content">
+        <!-- Feed Header & Bộ lọc Tabs -->
+        <div class="feed-header">
+          <h1 class="feed-title" id="feed-heading">Bảng tin của bạn</h1>
+          <div class="feed-tabs">
+            <button class="tab-btn active" id="tab-home">Của bạn</button>
+            <button class="tab-btn" id="tab-all">Tất cả bài viết</button>
+          </div>
+        </div>
+
+        <!-- Danh sách bài viết -->
+        <section id="feed-container"></section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/feed.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let currentFilter = 'home';
+      const heading = document.getElementById('feed-heading');
+      const tabHome = document.getElementById('tab-home');
+      const tabAll = document.getElementById('tab-all');
+
+      function updateFeed() {
+        if (currentFilter === 'home') {
+          heading.textContent = 'Bảng tin của bạn';
+          tabHome.classList.add('active');
+          tabAll.classList.remove('active');
+          renderFeed({
+            containerId: 'feed-container',
+            filter: 'home',
+            emptyTitle: 'Bảng tin của bạn đang trống',
+            emptyDesc: 'Hãy tham gia thêm các cộng đồng ở cột bên trái hoặc chuyển qua xem "Tất cả bài viết" nhé!'
+          });
+        } else {
+          heading.textContent = 'Tất cả bài viết cộng đồng';
+          tabAll.classList.add('active');
+          tabHome.classList.remove('active');
+          renderFeed({
+            containerId: 'feed-container',
+            filter: 'all',
+            emptyTitle: 'Chưa có bài viết nào trong hệ thống'
+          });
+        }
+      }
+
+      tabHome.addEventListener('click', () => {
+        currentFilter = 'home';
+        updateFeed();
+      });
+
+      tabAll.addEventListener('click', () => {
+        currentFilter = 'all';
+        updateFeed();
+      });
+
+      updateFeed();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài viết đã lưu - DevShare</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navbar chung -->
+  <header id="app-navbar"></header>
+
+  <!-- Bố cục chính -->
+  <div class="container">
+    <div class="layout-wrapper">
+      <!-- Cột Sidebar trái -->
+      <aside id="app-sidebar"></aside>
+
+      <!-- Cột nội dung chính -->
+      <main class="main-content">
+        <div class="feed-header">
+          <h1 class="feed-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle; color: var(--primary); margin-right: 6px;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+            Bài viết đã lưu
+          </h1>
+        </div>
+
+        <section id="saved-feed-container"></section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/feed.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      renderFeed({
+        containerId: 'saved-feed-container',
+        filter: 'saved',
+        emptyTitle: 'Bạn chưa lưu bài viết nào',
+        emptyDesc: 'Khi thấy bài viết hay, hãy nhấn nút "Lưu bài" để xem lại bất cứ khi nào bạn muốn!'
+      });
+    });
+  </script>
+</body>
+</html>

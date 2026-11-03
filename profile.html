@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang cá nhân - DevShare</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navbar chung -->
+  <header id="app-navbar"></header>
+
+  <!-- Bố cục chính -->
+  <div class="container">
+    <div class="layout-wrapper">
+      <!-- Cột Sidebar trái -->
+      <aside id="app-sidebar"></aside>
+
+      <!-- Cột nội dung chính -->
+      <main class="main-content">
+        <!-- Khung hồ sơ -->
+        <div id="profile-card-container"></div>
+
+        <!-- Tiêu đề danh sách bài viết -->
+        <div style="margin-bottom: 16px;">
+          <h2 style="font-size: 1.25rem; font-weight: 700;">Bài viết đã đăng</h2>
+        </div>
+
+        <!-- Danh sách bài viết do user đăng -->
+        <section id="user-posts-container"></section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/feed.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const queryUsername = params.get('u');
+      const currentUser = window.devStore.getCurrentUser();
+
+      const username = queryUsername || currentUser.username;
+      const isSelf = username.toLowerCase() === currentUser.username.toLowerCase();
+
+      // Nếu là chính mình thì lấy thông tin currentUser mới nhất
+      let profileUser = currentUser;
+      if (!isSelf) {
+        // Mô phỏng thông tin tác giả khác
+        profileUser = {
+          username: username,
+          name: username,
+          profile: {
+            bio: `Thành viên tích cực đóng góp trong cộng đồng DevShare.`,
+            avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80'
+          },
+          followers_count: 56,
+          following_count: 23
+        };
+      }
+
+      document.title = `u/${profileUser.username} - DevShare`;
+
+      const profileCard = document.getElementById('profile-card-container');
+      profileCard.className = 'profile-card';
+      profileCard.innerHTML = `
+        <div class="profile-header">
+          <img src="${profileUser.profile.avatar}" alt="${profileUser.username}" class="avatar-img-lg" />
+          <div style="flex: 1;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h1 style="font-size: 1.6rem; font-weight: 800;">${profileUser.name || profileUser.username}</h1>
+                <div style="color: var(--text-muted); font-size: 0.9rem;">u/${profileUser.username}</div>
+              </div>
+
+              ${isSelf ? `
+                <a href="settings-profile.html" class="btn btn-outline btn-sm">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  Chỉnh sửa hồ sơ
+                </a>
+              ` : `
+                <button id="toggle-follow-btn" class="btn btn-primary btn-sm">+ Theo dõi</button>
+              `}
+            </div>
+
+            <p style="margin-top: 12px; color: var(--text-sub); font-size: 0.95rem;">
+              ${profileUser.profile.bio || 'Chưa cập nhật tiểu sử.'}
+            </p>
+
+            <div class="profile-stats">
+              <div><strong id="followers-num">${profileUser.followers_count}</strong> <span style="color: var(--text-muted);">người theo dõi</span></div>
+              <div><strong>${profileUser.following_count}</strong> <span style="color: var(--text-muted);">đang theo dõi</span></div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Follow toggle for other users
+      const followBtn = document.getElementById('toggle-follow-btn');
+      if (followBtn) {
+        let isFollowing = false;
+        followBtn.onclick = () => {
+          isFollowing = !isFollowing;
+          followBtn.textContent = isFollowing ? 'Đang theo dõi (Hủy)' : '+ Theo dõi';
+          followBtn.className = `btn ${isFollowing ? 'btn-outline' : 'btn-primary'} btn-sm`;
+          const numEl = document.getElementById('followers-num');
+          if (numEl) {
+            numEl.textContent = profileUser.followers_count + (isFollowing ? 1 : 0);
+          }
+          showToast(isFollowing ? `Đã theo dõi u/${profileUser.username}` : `Đã hủy theo dõi`, 'info');
+        };
+      }
+
+      // Render posts by this author
+      renderFeed({
+        containerId: 'user-posts-container',
+        authorName: profileUser.username,
+        emptyTitle: `u/${profileUser.username} chưa đăng bài viết nào`,
+        emptyDesc: isSelf ? 'Hãy tạo bài viết đầu tiên của bạn để chia sẻ kiến thức ngay nào!' : ''
+      });
+    });
+  </script>
+</body>
+</html>

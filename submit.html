@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tạo bài viết mới - DevShare</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navbar chung -->
+  <header id="app-navbar"></header>
+
+  <!-- Bố cục chính -->
+  <div class="container">
+    <div class="layout-wrapper">
+      <!-- Cột Sidebar trái -->
+      <aside id="app-sidebar"></aside>
+
+      <!-- Cột nội dung chính -->
+      <main class="main-content">
+        <div class="form-card">
+          <h1 class="form-title">Tạo bài viết mới</h1>
+
+          <form id="create-post-form">
+            <!-- Chọn cộng đồng -->
+            <div class="form-group">
+              <label class="form-label" for="post-community">Cộng đồng <span class="required">*</span></label>
+              <select id="post-community" class="form-control" required>
+                <!-- Populated by JS -->
+              </select>
+            </div>
+
+            <!-- Tiêu đề -->
+            <div class="form-group">
+              <label class="form-label" for="post-title">Tiêu đề bài viết <span class="required">*</span></label>
+              <input 
+                type="text" 
+                id="post-title" 
+                class="form-control" 
+                placeholder="Ví dụ: Cách tối ưu hiệu năng trang web với Vanilla JavaScript..." 
+                required 
+              />
+            </div>
+
+            <!-- Nội dung bài viết (Markdown) -->
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label class="form-label" for="post-content" style="margin-bottom: 0;">Nội dung (hỗ trợ Markdown)</label>
+                <button type="button" id="toggle-preview-btn" class="btn btn-ghost btn-sm">👁️ Xem trước Markdown</button>
+              </div>
+              <textarea 
+                id="post-content" 
+                class="form-control" 
+                placeholder="Chia sẻ kiến thức, code mẫu, kinh nghiệm lập trình... Hỗ trợ cú pháp Markdown (# Tiêu đề, **in đậm**, ```code```, v.v.)"
+                rows="10"
+              ></textarea>
+              <div id="markdown-preview-box" class="form-control markdown-body" style="display: none; min-height: 200px; background-color: #fff; border-color: var(--primary);"></div>
+              <div class="form-help">Mẹo: Bạn có thể viết code block bằng 3 dấu backtick ```javascript ... ```</div>
+            </div>
+
+            <!-- Link ảnh đính kèm -->
+            <div class="form-group">
+              <label class="form-label" for="post-image">Hình ảnh minh họa (URL ảnh online)</label>
+              <input 
+                type="url" 
+                id="post-image" 
+                class="form-control" 
+                placeholder="https://images.unsplash.com/..." 
+              />
+              <div class="form-help" style="margin-top: 8px;">
+                Chọn nhanh ảnh mẫu công nghệ:
+                <div style="display: flex; gap: 8px; margin-top: 4px; flex-wrap: wrap;">
+                  <button type="button" class="btn btn-outline btn-sm insert-img-preset" data-url="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=900">💻 Lập trình</button>
+                  <button type="button" class="btn btn-outline btn-sm insert-img-preset" data-url="https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=900">🎨 Thiết kế Web</button>
+                  <button type="button" class="btn btn-outline btn-sm insert-img-preset" data-url="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=900">⚛️ React Dev</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Nút bấm hành động -->
+            <div class="form-actions">
+              <a href="index.html" class="btn btn-outline">Hủy bỏ</a>
+              <button type="submit" class="btn btn-primary">Đăng bài viết</button>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/submit.js"></script>
+</body>
+</html>

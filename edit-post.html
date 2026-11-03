@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chỉnh sửa bài viết - DevShare</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navbar chung -->
+  <header id="app-navbar"></header>
+
+  <!-- Bố cục chính -->
+  <div class="container">
+    <div class="layout-wrapper">
+      <!-- Cột Sidebar trái -->
+      <aside id="app-sidebar"></aside>
+
+      <!-- Cột nội dung chính -->
+      <main class="main-content">
+        <div class="form-card" id="edit-form-card">
+          <h1 class="form-title">Chỉnh sửa bài viết</h1>
+
+          <form id="edit-post-form">
+            <!-- Tiêu đề -->
+            <div class="form-group">
+              <label class="form-label" for="edit-title">Tiêu đề bài viết <span class="required">*</span></label>
+              <input 
+                type="text" 
+                id="edit-title" 
+                class="form-control" 
+                required 
+              />
+            </div>
+
+            <!-- Nội dung bài viết (Markdown) -->
+            <div class="form-group">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label class="form-label" for="edit-content" style="margin-bottom: 0;">Nội dung (hỗ trợ Markdown)</label>
+                <button type="button" id="edit-toggle-preview" class="btn btn-ghost btn-sm">👁️ Xem trước Markdown</button>
+              </div>
+              <textarea 
+                id="edit-content" 
+                class="form-control" 
+                rows="12"
+                required
+              ></textarea>
+              <div id="edit-preview-box" class="form-control markdown-body" style="display: none; min-height: 220px; background-color: #fff; border-color: var(--primary);"></div>
+            </div>
+
+            <!-- Nút bấm hành động -->
+            <div class="form-actions">
+              <button type="button" id="cancel-edit-btn" class="btn btn-outline">Hủy bỏ</button>
+              <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const postId = params.get('id');
+
+      if (!postId) {
+        showToast('Không tìm thấy bài viết để sửa', 'error');
+        setTimeout(() => window.location.href = 'index.html', 1000);
+        return;
+      }
+
+      const post = window.devStore.getPostById(postId);
+      if (!post) {
+        showToast('Bài viết không tồn tại', 'error');
+        setTimeout(() => window.location.href = 'index.html', 1000);
+        return;
+      }
+
+      const titleInput = document.getElementById('edit-title');
+      const contentInput = document.getElementById('edit-content');
+      const previewBox = document.getElementById('edit-preview-box');
+      const toggleBtn = document.getElementById('edit-toggle-preview');
+      const form = document.getElementById('edit-post-form');
+      const cancelBtn = document.getElementById('cancel-edit-btn');
+
+      titleInput.value = post.title;
+      contentInput.value = post.content || '';
+
+      cancelBtn.onclick = () => {
+        window.location.href = `post.html?id=${post.id}`;
+      };
+
+      let isPreview = false;
+      toggleBtn.onclick = () => {
+        isPreview = !isPreview;
+        if (isPreview) {
+          toggleBtn.textContent = '✏️ Chỉnh sửa';
+          contentInput.style.display = 'none';
+          previewBox.style.display = 'block';
+          previewBox.innerHTML = renderMarkdown(contentInput.value);
+        } else {
+          toggleBtn.textContent = '👁️ Xem trước Markdown';
+          contentInput.style.display = 'block';
+          previewBox.style.display = 'none';
+        }
+      };
+
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        try {
+          window.devStore.updatePost(post.id, {
+            title: titleInput.value.trim(),
+            content: contentInput.value.trim()
+          });
+          showToast('Đã cập nhật bài viết thành công!', 'success');
+          setTimeout(() => {
+            window.location.href = `post.html?id=${post.id}`;
+          }, 500);
+        } catch (err) {
+          showToast(err.message || 'Lỗi cập nhật', 'error');
+        }
+      };
+    });
+  </script>
+</body>
+</html>

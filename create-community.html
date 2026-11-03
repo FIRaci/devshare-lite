@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tạo cộng đồng mới - DevShare</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navbar chung -->
+  <header id="app-navbar"></header>
+
+  <!-- Bố cục chính -->
+  <div class="container">
+    <div class="layout-wrapper">
+      <!-- Cột Sidebar trái -->
+      <aside id="app-sidebar"></aside>
+
+      <!-- Cột nội dung chính -->
+      <main class="main-content">
+        <div class="form-card">
+          <h1 class="form-title">Tạo một cộng đồng mới</h1>
+
+          <form id="create-community-form">
+            <!-- Tên cộng đồng -->
+            <div class="form-group">
+              <label class="form-label" for="comm-name">Tên cộng đồng (viết liền không dấu, dùng dấu gạch nối) <span class="required">*</span></label>
+              <div style="display: flex; align-items: center; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #fff; overflow: hidden;">
+                <span style="padding: 10px 14px; background-color: var(--bg-app); color: var(--text-muted); font-weight: 700; border-right: 1px solid var(--border-color);">c/</span>
+                <input 
+                  type="text" 
+                  id="comm-name" 
+                  class="form-control" 
+                  placeholder="golang, tailwindcss, ai-agents..." 
+                  style="border: none; border-radius: 0;"
+                  required 
+                />
+              </div>
+              <div class="form-help">Tên cộng đồng không thể đổi sau khi đã tạo. Tối đa 25 ký tự.</div>
+            </div>
+
+            <!-- Mô tả -->
+            <div class="form-group">
+              <label class="form-label" for="comm-desc">Mô tả cộng đồng <span class="required">*</span></label>
+              <textarea 
+                id="comm-desc" 
+                class="form-control" 
+                placeholder="Mô tả mục tiêu, chủ đề và quy định chung của cộng đồng..."
+                rows="4"
+                required
+              ></textarea>
+            </div>
+
+            <!-- Nút bấm -->
+            <div class="form-actions">
+              <a href="index.html" class="btn btn-outline">Hủy bỏ</a>
+              <button type="submit" class="btn btn-teal">Tạo cộng đồng</button>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('create-community-form');
+      const nameInput = document.getElementById('comm-name');
+      const descInput = document.getElementById('comm-desc');
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const rawName = nameInput.value.trim();
+        const desc = descInput.value.trim();
+
+        if (!rawName) {
+          showToast('Vui lòng nhập tên cộng đồng', 'error');
+          return;
+        }
+
+        try {
+          const newComm = window.devStore.createCommunity({
+            name: rawName,
+            description: desc
+          });
+
+          showToast(`Đã tạo cộng đồng c/${newComm.name} thành công!`, 'success');
+          setTimeout(() => {
+            window.location.href = `community.html?name=${newComm.name}`;
+          }, 500);
+        } catch (err) {
+          showToast(err.message || 'Lỗi khi tạo cộng đồng', 'error');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tìm kiếm - DevShare</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Navbar chung -->
+  <header id="app-navbar"></header>
+
+  <!-- Bố cục chính -->
+  <div class="container">
+    <div class="layout-wrapper">
+      <!-- Cột Sidebar trái -->
+      <aside id="app-sidebar"></aside>
+
+      <!-- Cột nội dung chính -->
+      <main class="main-content">
+        <div class="feed-header">
+          <h1 class="feed-title" id="search-title">Kết quả tìm kiếm</h1>
+        </div>
+
+        <!-- Khối kết quả cộng đồng phù hợp (nếu có) -->
+        <div id="search-communities-section" style="margin-bottom: 24px; display: none;">
+          <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;">Cộng đồng phù hợp</h3>
+          <div id="search-communities-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;"></div>
+        </div>
+
+        <!-- Danh sách bài viết tìm được -->
+        <div>
+          <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;">Bài viết</h3>
+          <section id="search-posts-container"></section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/feed.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const query = (params.get('q') || '').trim();
+
+      const searchTitle = document.getElementById('search-title');
+      const commSection = document.getElementById('search-communities-section');
+      const commList = document.getElementById('search-communities-list');
+
+      if (!query) {
+        searchTitle.textContent = 'Vui lòng nhập từ khóa tìm kiếm';
+        document.getElementById('search-posts-container').innerHTML = `
+          <div class="empty-state">
+            <h3 class="empty-state-title">Chưa có từ khóa</h3>
+            <p class="empty-state-desc">Hãy nhập từ khóa vào ô tìm kiếm ở phía trên để tìm bài viết hoặc cộng đồng.</p>
+          </div>
+        `;
+        return;
+      }
+
+      searchTitle.textContent = `Kết quả tìm kiếm cho: "${query}"`;
+      document.title = `Tìm kiếm "${query}" - DevShare`;
+
+      // Tìm cộng đồng
+      const allCommunities = window.devStore.getCommunities();
+      const matchedCommunities = allCommunities.filter(c => 
+        c.name.toLowerCase().includes(query.toLowerCase()) || 
+        c.description.toLowerCase().includes(query.toLowerCase())
+      );
+
+      if (matchedCommunities.length > 0) {
+        commSection.style.display = 'block';
+        commList.innerHTML = matchedCommunities.map(c => `
+          <div style="background: #fff; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <a href="community.html?name=${c.name}" style="font-weight: 700; color: var(--primary);">c/${c.name}</a>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">${c.member_count} thành viên</div>
+            </div>
+            <a href="community.html?name=${c.name}" class="btn btn-outline btn-sm">Xem</a>
+          </div>
+        `).join('');
+      }
+
+      // Render bài viết phù hợp
+      renderFeed({
+        containerId: 'search-posts-container',
+        search: query,
+        emptyTitle: `Không tìm thấy bài viết nào cho "${query}"`,
+        emptyDesc: 'Thử tìm với từ khóa khác như "javascript", "react", "html", "css", hoặc tạo bài viết mới!'
+      });
+    });
+  </script>
+</body>
+</html>
